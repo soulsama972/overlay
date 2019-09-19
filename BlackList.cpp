@@ -121,7 +121,7 @@ void BlackList::DrawESPBone()
 	Overlay.rect.ClearInstance();
 	Overlay.Line.ClearInstance();
 }
-#define PI 3.1415926535897932384626433832795f
+
 
 void BlackList::AimBot()
 {
@@ -178,7 +178,7 @@ void BlackList::AimBot()
 		float m = diff.GetMagnitude();
 		float pitch = atan2(diff.y , diff.x)  * 180 / PI;
 		float yaw = asinf(diff.z / m) * 180 / PI;
-
+		
 		//camera->angle.x = (int)(pitch / 360 * 65535) ;//pich 
 		//camera->angle.y = (int)(yaw / 360 * 65535);//yaw
 	}

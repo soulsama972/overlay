@@ -1,6 +1,6 @@
 #pragma once
 #include"Overlay11.hpp"
-
+#define PI 3.1415926535897932384626433832795f
 
 // Generated using ReClass 2016
 
