@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Hook.cpp">
+      <Filter>Utill</Filter>
+    </ClCompile>
+    <ClCompile Include="Overlay9.cpp">
+      <Filter>D3D9</Filter>
+    </ClCompile>
+    <ClCompile Include="model9.cpp">
+      <Filter>D3D9</Filter>
+    </ClCompile>
+    <ClCompile Include="Overlay11.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="model11.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="BlackList.cpp">
+      <Filter>Games\BlackList</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Utill.hpp">
+      <Filter>Utill</Filter>
+    </ClInclude>
+    <ClInclude Include="Hook.h">
+      <Filter>Utill</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Overlay9.hpp">
+      <Filter>D3D9</Filter>
+    </ClInclude>
+    <ClInclude Include="model9.hpp">
+      <Filter>D3D9</Filter>
+    </ClInclude>
+    <ClInclude Include="Overlay11.hpp">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="model11.hpp">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="BlackList.hpp">
+      <Filter>Games\BlackList</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Utill">
+      <UniqueIdentifier>{2b10735e-79f1-4e58-bed7-6a0cadae8464}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{6e52431a-f77a-412b-b255-53bb4ef9d3cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3D9">
+      <UniqueIdentifier>{af92711f-dbf4-4f6e-810f-a51cb95504de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3D11">
+      <UniqueIdentifier>{c87b2009-2f20-4b46-bde3-60e7c3f1bfbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Games">
+      <UniqueIdentifier>{2bfa9dd1-0fe9-4327-81e3-7c2adc971037}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Games\BlackList">
+      <UniqueIdentifier>{502041c0-b37d-443a-a579-0965a0f783fd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="test.asm">
+      <Filter>Utill</Filter>
+    </MASM>
+  </ItemGroup>
+</Project>
