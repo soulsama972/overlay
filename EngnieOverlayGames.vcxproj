@@ -93,8 +93,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>E:\projects 2019\static lib\include;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\projects 2019\static lib\32Bit;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\static lib\include;E:\projects 2019\static lib\include;$(IncludePath)</IncludePath>
+    <LibraryPath>E:\projects 2019\static lib\32Bit;D:\static lib\32Bit;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LibraryPath>E:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;E:\projects 2019\static lib;$(LibraryPath)</LibraryPath>
