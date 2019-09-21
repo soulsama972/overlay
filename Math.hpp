@@ -191,8 +191,6 @@ public:
 
 };
 
-
-
 template<typename T>
 class vec2
 {
@@ -391,3 +389,30 @@ public:
 using fVec2 = vec2<float>;
 using fVec3 = vec3<float>;
 using fVec4 = vec4<float>;
+
+
+inline bool WorldToScreen(float * viewMatrix,fVec3 pos,fVec2 &newPos,fVec2 screenSize,bool transpose)
+{
+	auto TransfromCoord = [](float x, float f)
+	{
+		return f * (x + 1) * 0.5f;
+	};
+	fVec4 vec4;
+	Matrix4x4 view = viewMatrix;
+
+	if (transpose)
+		view.Transpose(view);
+
+	vec4.Transform(pos, view);
+
+	if (vec4.w < 0.5f)
+		return false;
+
+	vec4.x /= vec4.w;
+	vec4.y /= vec4.w;
+
+	newPos.x = TransfromCoord(vec4.x, screenSize.x);
+	newPos.y = TransfromCoord(-vec4.y, screenSize.y);
+
+	return true;
+}

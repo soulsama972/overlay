@@ -7,7 +7,7 @@ void __declspec(naked) GetViewMatrix()
 	__asm
 	{
 		add edi, 0x138
-		mov Overlay.viewMatrix, edi
+		mov bList.viewMatrix, edi
 		jmp bList.hViewMatrix.jumpBack
 	}
 }
@@ -43,6 +43,8 @@ void __declspec(naked) GetAngleCemrea()
 
 void BlackList::Init()
 {
+	OverlayInit();
+
 	base = Utill::getBaseAddr(L"Blacklist_DX11_game.exe");
 	if (!base)
 	{
@@ -63,7 +65,7 @@ void BlackList::Init()
 
 void BlackList::Clean()
 {
-	std::lock_guard<std::mutex> lck(Overlay.mu);
+	OverlayClean();
 
 	Hook::unHooked(hViewMatrix);
 	Hook::freeHook(hViewMatrix);
@@ -76,10 +78,11 @@ void BlackList::Clean()
 	Hook::freeHook(hcamera);
 }
 
-
-
 void BlackList::DrawESPBone()
 {
+	if (viewMatrix == 0)
+		return;
+	UpdateScreen();
 	for (size_t i = 0; i < len; i++)
 	{
 		__try
@@ -91,15 +94,6 @@ void BlackList::DrawESPBone()
 				if (oList[i]->playerPawn->basicWeapon)
 					oList[i]->playerPawn->basicWeapon->weaponComponent->holdWeapon->ammoLeft = 99;
 				oList[i]->playerPawn->pHealthSystem->currentHealth = oList[i]->playerPawn->pHealthSystem->maxHealth;
-			/*	for (int j = 0; j < oList[i]->skeleton->meshLen; j++)
-				{
-					fVec2 p;
-					wchar_t buffer[40];
-					ZeroMemory(buffer, 40);
-					swprintf(buffer, 40, L"%d",j);
-					Overlay.WorldToScreen(oList[i]->skeleton->meshInstance->model->pMesh[j].pos, p, false);
-					Overlay.pFontWrapper->DrawString(Overlay.devcon, buffer, 8, p.x,p.y, 0xff00ffff, FW1_TEXT_FLAG::FW1_RESTORESTATE);
-				}*/
 				continue;
 			}
 			if (oList[i]->playerPawn->pHealthSystem && oList[i]->playerPawn->pHealthSystem->currentHealth > 0)
@@ -117,9 +111,8 @@ void BlackList::DrawESPBone()
 			continue;
 		}
 	}
-	Overlay.DrawShapes();
-	Overlay.rect.ClearInstance();
-	Overlay.Line.ClearInstance();
+
+	DrawShapes();
 }
 
 
@@ -218,27 +211,28 @@ void BlackList::DrawDog(Mesh* mesh)
 	fVec2 fHands[9];
 	fVec2 fOri[4];
 	for (int i = 0; i < 4; i++)
-		if (!Overlay.WorldToScreen(mesh[oriId[i]].pos, fOri[i], false))
+		if (!WorldToScreen(viewMatrix,mesh[oriId[i]].pos, fOri[i],screenSize, false))
 			return;
 	for (int i = 0; i < 9; i++)
 	{
-		if (!Overlay.WorldToScreen(mesh[legs[i]].pos, fLegs[i], false))
+		if (!WorldToScreen(viewMatrix, mesh[legs[i]].pos, fLegs[i], screenSize, false))
 			return;
-		if (!Overlay.WorldToScreen(mesh[hands[i]].pos, fHands[i], false))
+		if (!WorldToScreen(viewMatrix, mesh[hands[i]].pos, fHands[i], screenSize, false))
 			return;
 	}
 	for (int i = 0; i < 8; i++)
 	{
-		Overlay.InsertLine(fLegs[i].x, fLegs[i].y, fLegs[i + 1].x, fLegs[i + 1].y, c);
-		Overlay.InsertLine(fHands[i].x, fHands[i].y, fHands[i + 1].x, fHands[i + 1].y, c);
+		InsertLine(fLegs[i], fLegs[i + 1], c);
+		InsertLine(fHands[i], fHands[i + 1], c);
 	}
 	for (int i = 0; i < 3; i++)
-		Overlay.InsertLine(fOri[i].x, fOri[i].y, fOri[i + 1].x, fOri[i + 1].y, c);
+		InsertLine(fOri[i], fOri[i + 1], c);
 }
 
 void BlackList::DrawMan(Mesh* mesh)
 {
 	fVec4 c = fVec4(0, 1, 1, 1);
+
 	int legs[] = { 52, 51 ,50 ,49, 45, 46, 47, 48 };
 	int hands[] = { 10 ,9 ,8 ,7 ,26 ,27 ,28 ,29 };
 	int oriId[] = { 6,0 };
@@ -247,21 +241,21 @@ void BlackList::DrawMan(Mesh* mesh)
 	fVec2 fHands[8];
 	fVec2 fOri[2];
 	for (int i = 0; i < 2; i++)
-		if (!Overlay.WorldToScreen(mesh[oriId[i]].pos, fOri[i], false))
+		if (!WorldToScreen(viewMatrix, mesh[oriId[i]].pos, fOri[i], screenSize, false))
 			return;
 	for (int i = 0; i < 9; i++)
 	{
-		if (!Overlay.WorldToScreen(mesh[legs[i]].pos, fLegs[i], false))
+		if (!WorldToScreen(viewMatrix, mesh[legs[i]].pos, fLegs[i], screenSize, false))
 			return;
-		if (!Overlay.WorldToScreen(mesh[hands[i]].pos, fHands[i], false))
+		if (!WorldToScreen(viewMatrix, mesh[hands[i]].pos, fHands[i], screenSize, false))
 			return;
 	}
 	for (int i = 0; i < 7; i++)
 	{
-		Overlay.InsertLine(fLegs[i].x, fLegs[i].y, fLegs[i + 1].x, fLegs[i + 1].y, c);
-		Overlay.InsertLine(fHands[i].x, fHands[i].y, fHands[i + 1].x, fHands[i + 1].y, c);
+		InsertLine(fLegs[i],fLegs[i + 1], c);
+		InsertLine(fHands[i], fHands[i + 1], c);
 	}
-	Overlay.InsertLine(fOri[0].x, fOri[0].y, fOri[1].x, fOri[1].y, c);
+	InsertLine(fOri[0], fOri[1], c);
 }
 
 void BlackList::DrawDrone(Mesh* mesh)
@@ -275,27 +269,26 @@ void BlackList::DrawDrone(Mesh* mesh)
 	fVec2 fOri[2];
 
 	for (int i = 0; i < 2; i++)
-		if (!Overlay.WorldToScreen(mesh[ori[i]].pos, fOri[i], false))
+		if (!WorldToScreen(viewMatrix, mesh[ori[i]].pos, fOri[i], screenSize, false))
 			return;
 
 	for (int i = 0; i < 4; i++)
-		if (!Overlay.WorldToScreen(mesh[left[i]].pos, fLeft[i], false))
+		if (!WorldToScreen(viewMatrix, mesh[left[i]].pos, fLeft[i], screenSize, false))
 			return;
 
 	for (int i = 0; i < 4; i++)
-		if (!Overlay.WorldToScreen(mesh[right[i]].pos, fRight[i], false))
+		if (!WorldToScreen(viewMatrix, mesh[right[i]].pos, fRight[i], screenSize, false))
 			return;
 
 	for (int i = 0; i < 3; i++)
 	{
-		Overlay.InsertLine(fLeft[i].x, fLeft[i].y, fLeft[i + 1].x, fLeft[i + 1].y, c);
-		Overlay.InsertLine(fRight[i].x, fRight[i].y, fRight[i + 1].x, fRight[i + 1].y, c);
-	}
-	Overlay.InsertLine(fLeft[0].x, fLeft[0].y, fRight[0].x, fRight[0].y, c);
-	Overlay.InsertLine(fLeft[3].x, fLeft[3].y, fRight[3].x, fRight[3].y, c);
-		
-}
+		InsertLine(fLeft[i], fLeft[i + 1], c);
 
+		InsertLine(fLeft[0], fRight[0], c);
+		InsertLine(fLeft[3], fRight[3], c);
+
+	}
+}
 
 
 

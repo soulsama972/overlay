@@ -13,31 +13,31 @@
 class Overlay11
 {
 public:
-	bool overlay = false;
-	bool firstTimeInitD3D = true;
-	void Init();
+
 	void Init3D(IDXGISwapChain* pSwapChain);
-	void Clean();
+
+protected:
+	void OverlayInit();
+	void OverlayClean();
 	void InitShapes();
 	void UpdateScreen();
-	void InsertLine(float x,float y,float x2,float y2,fVec4 color);
+	void InsertLine(fVec2 p1, fVec2 p2,fVec4 color);
 	void InsertRect(fVec2 pos, fVec2 size, fVec4 color);
-	void DrawShapes();
-	bool WorldToScreen(fVec3 enemyPos, fVec2 & newEnemyPos, bool Transpose);
+	void DrawShapes(bool cleanAfterDraw = true);
 	void DrawString(float fontSize,fVec2 pos,DWORD color,wchar_t *arg,...);
 	void DrawString(fVec2 pos, wchar_t* arg, ...);
-	float* viewMatrix = nullptr;
-	ID3D11Device* dev = 0;                     
-	ID3D11DeviceContext* devcon = 0;           
-	IFW1FontWrapper* pFontWrapper = 0;
+
+public: 
 	fVec2 screenSize;
-	HWND hwnd = NULL;
 	std::mutex mu;
-	hook_t h;
-	Model11<VertexInstance>rect;
-	Model11<VertexInstance>Line;
 private:
 	ID3D11Buffer* screenBuffer = 0;
+	IFW1FontWrapper* pFontWrapper = 0;
+	ID3D11Device* dev = 0;
+	ID3D11DeviceContext* devcon = 0;
+	Model11<VertexInstance>rect;
+	Model11<VertexInstance>line;
+	bool firstTimeInitD3D = true;
+	hook_t h;
 };
 
-extern Overlay11 Overlay;

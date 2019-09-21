@@ -175,7 +175,7 @@ public:
 }; //Size=0x1538
 
 
-class BlackList
+class BlackList : public Overlay11
 {
 public:
 	void Init();
@@ -191,6 +191,7 @@ public:
 	ViewAngle* camera =0;
 	AUObject* object = 0;
 	globalCamera* pCam = 0;
+	float* viewMatrix = 0;
 private:
 	void DrawDog(Mesh* mesh);
 	void DrawMan(Mesh* mesh);

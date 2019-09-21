@@ -1,28 +1,20 @@
 #include "Overlay11.hpp"
 #include "BlackList.hpp"
 
-Overlay11 Overlay;
-
 typedef HRESULT(__stdcall* _Present11)(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
 _Present11 Present11;
 
 HRESULT __stdcall Present11CallBack(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 {
-	std::lock_guard<std::mutex> lck(Overlay.mu);
-	if (Overlay.firstTimeInitD3D)
-		Overlay.Init3D(pSwapChain);
-	if (Overlay.viewMatrix != nullptr)
-	{
-		Overlay.UpdateScreen();
-		bList.DrawESPBone();
-	//	bList.AimBot();
-	}
+	std::lock_guard<std::mutex> lck(bList.mu);
+	bList.Init3D(pSwapChain);
+	bList.DrawESPBone();
 	return Present11(pSwapChain, SyncInterval, Flags);
 }
 
-void Overlay11::Clean()
+void Overlay11::OverlayClean()
 {
-	std::lock_guard<std::mutex> lck(Overlay.mu);
+	std::lock_guard<std::mutex> lck(mu);
 
 	Hook::unHooked(h);
 	Hook::freeHook(h);
@@ -48,10 +40,10 @@ void Overlay11::Clean()
 		pFontWrapper = 0;
 	}
 	rect.CleanUp();
-	Line.CleanUp();
+	line.CleanUp();
 }
 
-void Overlay11::Init()
+void Overlay11::OverlayInit()
 {
 	UINT_PTR p;
 	do
@@ -66,9 +58,10 @@ void Overlay11::Init()
 
 void Overlay11::Init3D(IDXGISwapChain* pSwapChain)
 {
+	if (!firstTimeInitD3D)
+		return;
 	DXGI_SWAP_CHAIN_DESC sd = { 0 };
 	pSwapChain->GetDesc(&sd);
-	hwnd = sd.OutputWindow;
 	screenSize = fVec2(static_cast<float>(sd.BufferDesc.Width), static_cast<float>(sd.BufferDesc.Height));
 	HRESULT res = pSwapChain->GetDevice(__uuidof(ID3D11Device), (void**)& dev);
 	if (SUCCEEDED(res))
@@ -82,8 +75,9 @@ void Overlay11::Init3D(IDXGISwapChain* pSwapChain)
 		pFW1Factory->Release();
 
 
-		dev->GetImmediateContext(&Overlay.devcon);
-		InitShapes();
+		dev->GetImmediateContext(&devcon);
+
+
 		D3D11_BUFFER_DESC matrixBufferDesc = { 0 };
 		matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 		matrixBufferDesc.ByteWidth = sizeof(float) * 16;
@@ -98,7 +92,9 @@ void Overlay11::Init3D(IDXGISwapChain* pSwapChain)
 			MessageBox(0, L"", L"CreateBuffer  ", MB_OK);
 			exit(-1);
 		}
-		Overlay.firstTimeInitD3D = false;
+		InitShapes();
+
+		firstTimeInitD3D = false;
 	}
 }
 
@@ -128,36 +124,11 @@ void Overlay11::InitShapes()
 	{
 		0,1
 	};
-	Line.InitBuffer(dev, devcon, VertexLine, 2, ind, 2, 5000, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	line.InitBuffer(dev, devcon, VertexLine, 2, ind, 2, 5000, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 
 }
 
-bool Overlay11::WorldToScreen(fVec3 enemyPos, fVec2 & newEnemyPos, bool Transpose)
-{
 
-	auto TransfromCoord = [](float x, float f)
-	{
-		return f * (x + 1) * 0.5f;
-	};
-	fVec4 vec4;
-	Matrix4x4 view = viewMatrix;
-
-	if (Transpose)
-		view.Transpose(view);
-
-	vec4.Transform(enemyPos, view);
-
-	if (vec4.w < 0.5f)
-		return false;
-
-	vec4.x /= vec4.w;
-	vec4.y /= vec4.w;
-
-	newEnemyPos.x = TransfromCoord(vec4.x, screenSize.x);
-	newEnemyPos.y = TransfromCoord(-vec4.y, screenSize.y);
-
-	return true;
-}
 
 void Overlay11::DrawString( float fontSize, fVec2 pos, DWORD color, wchar_t* fmt, ...)
 {
@@ -207,13 +178,13 @@ void Overlay11::UpdateScreen()
 	devcon->VSSetConstantBuffers(bufferNumber, 1, &screenBuffer);
 }
 
-void Overlay11::InsertLine(float x, float y, float x2, float y2, fVec4 color)
+void Overlay11::InsertLine(fVec2 p1,fVec2 p2, fVec4 color)
 {
 	VertexInstance in;
 	in.color = color;
-	in.position = fVec2(x, y);
-	in.size = fVec2(x2 - x, y2 - y);
-	Line.AddInstance(in);
+	in.position = p1;
+	in.size = p2 - p1;
+	line.AddInstance(in);
 }
 
 void Overlay11::InsertRect(fVec2 pos, fVec2 size, fVec4 color)
@@ -225,8 +196,15 @@ void Overlay11::InsertRect(fVec2 pos, fVec2 size, fVec4 color)
 	rect.AddInstance(in);
 }
 
-void Overlay11::DrawShapes()
+void Overlay11::DrawShapes(bool cleanAfterDraw)
 {
+
 	rect.Draw();
-	Line.Draw();
+	line.Draw();
+
+	if (cleanAfterDraw)
+	{
+		rect.ClearInstance();
+		line.ClearInstance();		
+	}
 }
