@@ -29,7 +29,6 @@ protected:
 
 public: 
 	fVec2 screenSize;
-	std::mutex mu;
 private:
 	ID3D11Buffer* screenBuffer = 0;
 	IFW1FontWrapper* pFontWrapper = 0;

@@ -6,19 +6,18 @@ _Present11 Present11;
 
 HRESULT __stdcall Present11CallBack(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 {
-	std::lock_guard<std::mutex> lck(bList.mu);
 	bList.Init3D(pSwapChain);
 	bList.DrawESPBone();
+	bList.AimBot();
 	return Present11(pSwapChain, SyncInterval, Flags);
 }
 
 void Overlay11::OverlayClean()
 {
-	std::lock_guard<std::mutex> lck(mu);
 
 	Hook::unHooked(h);
+	Sleep(1000);
 	Hook::freeHook(h);
-	Sleep(100);
 	if (dev)
 	{
 		dev->Release();
