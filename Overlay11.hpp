@@ -24,6 +24,8 @@ public:
 	void InsertRect(fVec2 pos, fVec2 size, fVec4 color);
 	void DrawShapes();
 	bool WorldToScreen(fVec3 enemyPos, fVec2 & newEnemyPos, bool Transpose);
+	void DrawString(float fontSize,fVec2 pos,DWORD color,wchar_t *arg,...);
+	void DrawString(fVec2 pos, wchar_t* arg, ...);
 	float* viewMatrix = nullptr;
 	ID3D11Device* dev = 0;                     
 	ID3D11DeviceContext* devcon = 0;           

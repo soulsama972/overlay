@@ -155,7 +155,7 @@ void BlackList::AimBot()
 		{
 			if (oList[i]->playerPawn->pHealthSystem->currentHealth > 0 && oList[i] != player)
 			{
-				temp = fVec3( oList[i]->playerPawn->oriPos - player->playerPawn->oriPos).GetMagnitude();
+				temp = fVec3( oList[i]->playerPawn->oriPos - player->playerPawn->oriPos).GetLength();
 				if (smallst > temp)
 				{
 					smallst = temp;
@@ -174,13 +174,22 @@ void BlackList::AimBot()
 
 	__try
 	{
-		fVec3 diff = enemy->skeleton->meshInstance->model->pMesh[6].pos - player->playerPawn->oriPos;
-		float m = diff.GetMagnitude();
-		float pitch = atan2(diff.y , diff.x)  * 180 / PI;
-		float yaw = asinf(diff.z / m) * 180 / PI;
+		fVec3 EnemyHead = fVec3(enemy->skeleton->meshInstance->model->pMesh[6].pos.x,
+			enemy->skeleton->meshInstance->model->pMesh[6].pos.y,
+			enemy->skeleton->meshInstance->model->pMesh[50].pos.z );
+		fVec3 diff = EnemyHead - pCam->pAVAECamera->eyePos;
+		float m = diff.GetLength();
+
+		//ZeroMemory(buffer, 40);
+		//swprintf(buffer, 20, L"angle: %f", angle);
+		//Overlay.pFontWrapper->DrawString(Overlay.devcon, buffer, 15, 0, 400, 0xffff0000, FW1_TEXT_FLAG::FW1_RESTORESTATE);
 		
-		//camera->angle.x = (int)(pitch / 360 * 65535) ;//pich 
-		//camera->angle.y = (int)(yaw / 360 * 65535);//yaw
+
+		float pitch = asinf(diff.z / m)  * 180 / PI;
+		float yaw = atan2f(diff.y, diff.x) * 180 / PI;
+		
+		camera->angle.x = ((int)(pitch / 360 * 65535));//pich 
+		camera->angle.y = (int)(yaw / 360 * 65535);//yaw
 	}
 	__except (EXCEPTION_EXECUTE_HANDLER)
 	{

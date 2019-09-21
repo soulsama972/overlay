@@ -274,19 +274,18 @@ public:
 
 	inline vec3(const T& x, const T& y, const T& z) :x(x), y(y), z(z) {}
 
+	inline T GetDot(const vec3<T>& v)
+	{
+		return x * v.x + y * v.y + z * v.z;
+	}
 	inline T GetLength()
 	{
-		return x * x + y * y + z * z;
-	}
-
-	inline T GetMagnitude()
-	{
-		return (T)sqrt(GetLength());
+		return (T)sqrt(GetDot(*this));
 	}
 
 	inline vec3 GetNormalize()
 	{
-		T magnitude = GetMagnitude();
+		T magnitude = GetLength();
 		return vec3(x / magnitude, y / magnitude);
 	}
 

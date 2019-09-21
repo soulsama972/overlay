@@ -15,7 +15,7 @@ HRESULT __stdcall Present11CallBack(IDXGISwapChain* pSwapChain, UINT SyncInterva
 	{
 		Overlay.UpdateScreen();
 		bList.DrawESPBone();
-		bList.AimBot();
+	//	bList.AimBot();
 	}
 	return Present11(pSwapChain, SyncInterval, Flags);
 }
@@ -157,6 +157,27 @@ bool Overlay11::WorldToScreen(fVec3 enemyPos, fVec2 & newEnemyPos, bool Transpos
 	newEnemyPos.y = TransfromCoord(-vec4.y, screenSize.y);
 
 	return true;
+}
+
+void Overlay11::DrawString( float fontSize, fVec2 pos, DWORD color, wchar_t* fmt, ...)
+{
+
+	va_list args;
+	va_start(args, fmt);
+	wchar_t buffer[1024];
+	ZeroMemory(buffer, 1024*2);
+	vswprintf(buffer, 1024, fmt,args);
+	pFontWrapper->DrawString(devcon, buffer, fontSize, pos.x,pos.y, color, FW1_TEXT_FLAG::FW1_RESTORESTATE);
+}
+
+void Overlay11::DrawString(fVec2 pos, wchar_t* fmt, ...)
+{
+	va_list args;
+	va_start(args, fmt);
+	wchar_t buffer[1024];
+	ZeroMemory(buffer, 1024 * 2);
+	vswprintf(buffer, 1024, fmt, args);
+	pFontWrapper->DrawString(devcon, buffer, 15, pos.x, pos.y, 0xffffff00, FW1_TEXT_FLAG::FW1_RESTORESTATE);
 }
 
 void Overlay11::UpdateScreen()
