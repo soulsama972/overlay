@@ -41,6 +41,10 @@ void __declspec(naked) GetAngleCemrea()
 
 }
 
+
+typedef void(__thiscall* SS)(void* t);
+
+void(__thiscall BlackList::* pFunc)() = &BlackList::Init;
 void BlackList::Init()
 {
 	OverlayInit();
@@ -59,7 +63,9 @@ void BlackList::Init()
 
 	Hook::midHook(hcamera, base + offsetViewAngle, GetAngleCemrea, 6);
 	Hook::insertHook(hcamera);
-
+	void* member_address = ForceCast<void*>(&BlackList::MainLoop);
+	funClass = (ShellClass)member_address;
+	pThis = this;
 	pCam = (globalCamera*)(base + offsetGlobalCamera);
 }
 
@@ -76,6 +82,13 @@ void BlackList::Clean()
 
 	Hook::unHooked(hcamera);
 	Hook::freeHook(hcamera);
+}
+
+void BlackList::MainLoop(IDXGISwapChain* pSwapChain)
+{
+	Init3D(pSwapChain);
+	DrawESPBone();
+	AimBot();
 }
 
 void BlackList::DrawESPBone()

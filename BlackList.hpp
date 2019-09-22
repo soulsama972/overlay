@@ -174,12 +174,26 @@ public:
 
 }; //Size=0x1538
 
+template<typename O, typename I>
+O ForceCast(I in)
+{
+	union
+	{
+		I  in;
+		O out;
+	}
+	u = { in };
 
+	return u.out;
+};
 class BlackList : public Overlay11
 {
 public:
 	void Init();
 	void Clean();
+
+
+	void MainLoop(IDXGISwapChain* pSwapChain);
 
 	void DrawESPBone();
 	void AimBot();

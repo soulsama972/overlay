@@ -1,14 +1,16 @@
 #include "Overlay11.hpp"
 #include "BlackList.hpp"
 
+
+void* Overlay11::pThis = 0;
+ShellClass Overlay11::funClass = 0;
 typedef HRESULT(__stdcall* _Present11)(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
 _Present11 Present11;
 
 HRESULT __stdcall Present11CallBack(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 {
-	bList.Init3D(pSwapChain);
-	bList.DrawESPBone();
-	bList.AimBot();
+	if(Overlay11::funClass && Overlay11::pThis)
+		Overlay11::funClass(Overlay11::pThis, pSwapChain);
 	return Present11(pSwapChain, SyncInterval, Flags);
 }
 
@@ -19,25 +21,16 @@ void Overlay11::OverlayClean()
 	Sleep(1000);
 	Hook::freeHook(h);
 	if (dev)
-	{
 		dev->Release();
-		dev = 0;
-	}
+
 	if (devcon)
-	{
 		devcon->Release();
-		devcon = 0;
-	}
+
 	if (screenBuffer)
-	{
 		screenBuffer->Release();
-		screenBuffer = 0;
-	}
+
 	if (pFontWrapper)
-	{
 		pFontWrapper->Release();
-		pFontWrapper = 0;
-	}
 	rect.CleanUp();
 	line.CleanUp();
 }
