@@ -43,7 +43,7 @@ void __declspec(naked) GetAngleCemrea()
 
 void BlackList::Init()
 {
-	OverlayInit();
+	OverlayInit(this, (ShellClass)Utill::ForceCast(&BlackList::MainLoop));
 
 	base = Utill::getBaseAddr(L"Blacklist_DX11_game.exe");
 	if (!base)
@@ -61,9 +61,6 @@ void BlackList::Init()
 	Hook::insertHook(hcamera);
 
 	pCam = (globalCamera*)(base + offsetGlobalCamera);
-
-	shellClass = (ShellClass)Utill::ForceCast(&BlackList::MainLoop);
-	pThis = this;
 }
 
 void BlackList::Clean()
@@ -173,7 +170,6 @@ void BlackList::AimBot()
 	}
 	if (!enemy)
 		return;
-
 
 	__try
 	{

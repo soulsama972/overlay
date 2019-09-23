@@ -2,7 +2,6 @@
 #include"model11.hpp"
 #include"Hook.h"
 #include"Utill.hpp"
-#include<mutex>
 #pragma warning (push)
 #pragma warning (disable : 26495)
 #pragma warning (disable : 4005)
@@ -21,7 +20,7 @@ public:
 	static ShellClass shellClass;
 	static void* pThis;
 protected:
-	void OverlayInit();
+	void OverlayInit(void * pThis,ShellClass shellClass);
 	void OverlayClean();
 	void InitShapes();
 	void UpdateScreen();

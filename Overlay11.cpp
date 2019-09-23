@@ -1,5 +1,4 @@
 #include "Overlay11.hpp"
-#include "BlackList.hpp"
 
 ShellClass Overlay11::shellClass = 0;
 void * Overlay11::pThis = 0;
@@ -34,8 +33,10 @@ void Overlay11::OverlayClean()
 	line.CleanUp();
 }
 
-void Overlay11::OverlayInit()
+void Overlay11::OverlayInit(void* pThis, ShellClass shellClass)
 {
+	Overlay11::pThis = pThis;
+	Overlay11::shellClass = shellClass;
 	UINT_PTR p;
 	do
 	{
