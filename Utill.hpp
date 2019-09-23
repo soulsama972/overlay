@@ -17,7 +17,17 @@
 
 namespace Utill
 {
-
+	template<typename In>
+	inline void* ForceCast(In in)
+	{
+		union
+		{
+			In  in;
+			void* out;
+		}
+		u = { in };
+		return u.out;
+	}
 	inline UINT_PTR  GetD3D11Present()
 	{
 		ID3D11Device* pDevice = NULL;

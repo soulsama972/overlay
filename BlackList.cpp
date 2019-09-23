@@ -41,10 +41,6 @@ void __declspec(naked) GetAngleCemrea()
 
 }
 
-
-typedef void(__thiscall* SS)(void* t);
-
-void(__thiscall BlackList::* pFunc)() = &BlackList::Init;
 void BlackList::Init()
 {
 	OverlayInit();
@@ -63,10 +59,11 @@ void BlackList::Init()
 
 	Hook::midHook(hcamera, base + offsetViewAngle, GetAngleCemrea, 6);
 	Hook::insertHook(hcamera);
-	void* member_address = ForceCast<void*>(&BlackList::MainLoop);
-	funClass = (ShellClass)member_address;
-	pThis = this;
+
 	pCam = (globalCamera*)(base + offsetGlobalCamera);
+
+	shellClass = (ShellClass)Utill::ForceCast(&BlackList::MainLoop);
+	pThis = this;
 }
 
 void BlackList::Clean()
@@ -86,9 +83,9 @@ void BlackList::Clean()
 
 void BlackList::MainLoop(IDXGISwapChain* pSwapChain)
 {
-	Init3D(pSwapChain);
-	DrawESPBone();
-	AimBot();
+	bList.Init3D(pSwapChain);
+	bList.DrawESPBone();
+	bList.AimBot();
 }
 
 void BlackList::DrawESPBone()
@@ -186,11 +183,11 @@ void BlackList::AimBot()
 		fVec3 diff = EnemyHead - pCam->pAVAECamera->eyePos;
 		float m = diff.GetLength();
 
-		float pitch =90 - asinf(diff.z / m)  * 180 / PI;
+		float pitch =asinf(diff.z / m)  * 180 / PI;
 		float yaw = atan2f(diff.y, diff.x) * 180 / PI;
 		
-		camera->angle.x = ((int)(pitch / 360 * 65535));//pich 
-		camera->angle.y = (int)(yaw / 360 * 65535);//yaw
+		//camera->angle.x = ((int)(pitch / 360 * 65535));//pich 
+		//camera->angle.y = (int)(yaw / 360 * 65535);//yaw
 	}
 	__except (EXCEPTION_EXECUTE_HANDLER)
 	{

@@ -9,17 +9,18 @@
 #include<FW1FontWrapper.h>
 #pragma warning(pop)
 
+typedef void(__thiscall* ShellClass)(void* Class, IDXGISwapChain* pSwapChain);
+typedef HRESULT(__stdcall* _Present11)(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
+
 #pragma comment (lib,"FW1FontWrapper.lib")
-typedef void(__thiscall* ShellClass)(void* pThis, IDXGISwapChain* pSwapChain);
 class Overlay11
 {
 public:
 
 	void Init3D(IDXGISwapChain* pSwapChain);
+	static ShellClass shellClass;
 	static void* pThis;
-	static ShellClass funClass;
 protected:
-
 	void OverlayInit();
 	void OverlayClean();
 	void InitShapes();
@@ -29,6 +30,7 @@ protected:
 	void DrawShapes(bool cleanAfterDraw = true);
 	void DrawString(float fontSize,fVec2 pos,DWORD color,wchar_t *arg,...);
 	void DrawString(fVec2 pos, wchar_t* arg, ...);
+
 public: 
 	fVec2 screenSize;
 private:

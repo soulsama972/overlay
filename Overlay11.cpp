@@ -1,16 +1,14 @@
 #include "Overlay11.hpp"
 #include "BlackList.hpp"
 
-
-void* Overlay11::pThis = 0;
-ShellClass Overlay11::funClass = 0;
-typedef HRESULT(__stdcall* _Present11)(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
+ShellClass Overlay11::shellClass = 0;
+void * Overlay11::pThis = 0;
 _Present11 Present11;
 
 HRESULT __stdcall Present11CallBack(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 {
-	if(Overlay11::funClass && Overlay11::pThis)
-		Overlay11::funClass(Overlay11::pThis, pSwapChain);
+	if (Overlay11::shellClass && Overlay11::pThis)
+		Overlay11::shellClass(Overlay11::pThis, pSwapChain);
 	return Present11(pSwapChain, SyncInterval, Flags);
 }
 
@@ -31,6 +29,7 @@ void Overlay11::OverlayClean()
 
 	if (pFontWrapper)
 		pFontWrapper->Release();
+
 	rect.CleanUp();
 	line.CleanUp();
 }
