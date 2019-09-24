@@ -81,6 +81,7 @@ void BlackList::Clean()
 void BlackList::MainLoop(IDXGISwapChain* pSwapChain)
 {
 	bList.Init3D(pSwapChain);
+	UpdateScreen();
 	bList.DrawESPBone();
 	bList.AimBot();
 }
@@ -89,7 +90,6 @@ void BlackList::DrawESPBone()
 {
 	if (viewMatrix == 0)
 		return;
-	UpdateScreen();
 	for (size_t i = 0; i < len; i++)
 	{
 		__try
