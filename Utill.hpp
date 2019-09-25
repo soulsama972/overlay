@@ -28,6 +28,7 @@ namespace Utill
 		u = { in };
 		return u.out;
 	}
+
 	inline UINT_PTR  GetD3D11Present()
 	{
 		ID3D11Device* pDevice = NULL;
@@ -154,7 +155,6 @@ namespace Utill
 		CloseHandle(hSnap);
 		return 0;
 	}
-
 
 	inline UINT_PTR GetMainThread()
 	{

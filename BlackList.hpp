@@ -176,11 +176,11 @@ public:
 }; //Size=0x1538
 
 
-class BlackList : public Overlay11
+class BlackList : private Overlay11
 {
 public:
 	void Init();
-	void Clean();
+	void CleanUp();
 
 	void MainLoop(IDXGISwapChain* pSwapChain);
 
@@ -191,7 +191,7 @@ public:
 	hook_t hViewMatrix;
 	hook_t hAddOjbect;
 	hook_t hcamera;
-	ViewAngle* camera =0;
+	ViewAngle* camera = 0;
 	AUObject* object = 0;
 	globalCamera* pCam = 0;
 	float* viewMatrix = 0;

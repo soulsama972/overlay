@@ -11,7 +11,7 @@ HRESULT __stdcall Present11CallBack(IDXGISwapChain* pSwapChain, UINT SyncInterva
 	return Present11(pSwapChain, SyncInterval, Flags);
 }
 
-void Overlay11::OverlayClean()
+void Overlay11::OverlayCleanUp()
 {
 
 	Hook::unHooked(h);
@@ -31,12 +31,18 @@ void Overlay11::OverlayClean()
 
 	rect.CleanUp();
 	line.CleanUp();
+	if (bCreateConosle)
+	{
+		fclose(file);
+		FreeConsole();
+	}
 }
 
-void Overlay11::OverlayInit(void* pThis, ShellClass shellClass)
+void Overlay11::OverlayInit(void* pThis, ShellClass shellClass,bool createConsole)
 {
 	Overlay11::pThis = pThis;
 	Overlay11::shellClass = shellClass;
+	bCreateConosle = createConsole;
 	UINT_PTR p;
 	do
 	{
@@ -45,7 +51,13 @@ void Overlay11::OverlayInit(void* pThis, ShellClass shellClass)
 	Hook::apiHook(h, p, Present11CallBack, 5);
 	Present11 = (_Present11)h.jumpBack;
 	Hook::insertHook(h);
-
+\
+	if (bCreateConosle)
+	{
+		AllocConsole();
+		freopen_s(&file, "CONOUT$", "w", stdout);
+	}
+		
 }
 
 void Overlay11::Init3D(IDXGISwapChain* pSwapChain)
@@ -57,9 +69,7 @@ void Overlay11::Init3D(IDXGISwapChain* pSwapChain)
 	screenSize = fVec2(static_cast<float>(sd.BufferDesc.Width), static_cast<float>(sd.BufferDesc.Height));
 	HRESULT res = pSwapChain->GetDevice(__uuidof(ID3D11Device), (void**)& dev);
 	if (SUCCEEDED(res))
-	{
-
-		
+	{	
 		IFW1Factory* pFW1Factory;
 		FW1CreateFactory(FW1_VERSION, &pFW1Factory);
 
@@ -85,7 +95,7 @@ void Overlay11::Init3D(IDXGISwapChain* pSwapChain)
 			exit(-1);
 		}
 		InitShapes();
-
+		UpdateScreen();
 		firstTimeInitD3D = false;
 	}
 }
@@ -188,9 +198,9 @@ void Overlay11::InsertRect(fVec2 pos, fVec2 size, fVec4 color)
 	rect.AddInstance(in);
 }
 
-void Overlay11::DrawShapes(bool cleanAfterDraw)
+void Overlay11::Draw(bool cleanAfterDraw)
 {
-
+	UpdateScreen();
 	rect.Draw();
 	line.Draw();
 

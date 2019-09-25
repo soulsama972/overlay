@@ -63,9 +63,9 @@ void BlackList::Init()
 	pCam = (globalCamera*)(base + offsetGlobalCamera);
 }
 
-void BlackList::Clean()
+void BlackList::CleanUp()
 {
-	OverlayClean();
+	OverlayCleanUp();
 
 	Hook::unHooked(hViewMatrix);
 	Hook::freeHook(hViewMatrix);
@@ -81,7 +81,6 @@ void BlackList::Clean()
 void BlackList::MainLoop(IDXGISwapChain* pSwapChain)
 {
 	bList.Init3D(pSwapChain);
-	UpdateScreen();
 	bList.DrawESPBone();
 	bList.AimBot();
 }
@@ -119,7 +118,7 @@ void BlackList::DrawESPBone()
 		}
 	}
 
-	DrawShapes();
+	Draw();
 }
 
 
