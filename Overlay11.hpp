@@ -23,7 +23,7 @@ public:
 	static ShellClass shellClass;
 	static void* pThis;
 protected:
-	void OverlayInit(void * pThis,ShellClass shellClass, bool createConsole = true);
+	void OverlayInit(void * pThis,void* shellClass, bool createConsole = true);
 	void OverlayCleanUp();
 
 	void InsertLine(fVec2 p1, fVec2 p2,fVec4 color);
@@ -33,6 +33,9 @@ protected:
 
 	void DrawString(float fontSize,fVec2 pos,DWORD color,wchar_t *arg,...);
 	void DrawString(fVec2 pos, wchar_t* arg, ...);
+
+	template<typename T>
+	void SetWinProc(T* func);
 
 	fVec2 screenSize;
 private:
@@ -47,7 +50,15 @@ private:
 	Model11<VertexInstance>line;
 	bool firstTimeInitD3D = true;
 	bool bCreateConosle = true;
-	hook_t h;
-	FILE* file;
+	hook_t h = { 0 };
+	FILE* file = 0;
+	HWND hwnd = 0;
+	void* orignalWinProc = 0;
+
 };
 
+template<typename T>
+inline void Overlay11::SetWinProc(T* func)
+{
+	orignalWinProc = SetWindowLongPtr(hwnd, GWLP_WNDPROC, func);	
+}

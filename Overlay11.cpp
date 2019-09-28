@@ -14,6 +14,9 @@ HRESULT __stdcall Present11CallBack(IDXGISwapChain* pSwapChain, UINT SyncInterva
 void Overlay11::OverlayCleanUp()
 {
 
+	if(orignalWinProc)
+		SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG)orignalWinProc);
+
 	Hook::unHooked(h);
 	Sleep(1000);
 	Hook::freeHook(h);
@@ -38,10 +41,10 @@ void Overlay11::OverlayCleanUp()
 	}
 }
 
-void Overlay11::OverlayInit(void* pThis, ShellClass shellClass,bool createConsole)
+void Overlay11::OverlayInit(void* pThis, void* shellClass,bool createConsole)
 {
 	Overlay11::pThis = pThis;
-	Overlay11::shellClass = shellClass;
+	Overlay11::shellClass = (ShellClass)shellClass;
 	bCreateConosle = createConsole;
 	UINT_PTR p;
 	do
@@ -66,7 +69,9 @@ void Overlay11::Init3D(IDXGISwapChain* pSwapChain)
 		return;
 	DXGI_SWAP_CHAIN_DESC sd = { 0 };
 	pSwapChain->GetDesc(&sd);
+
 	screenSize = fVec2(static_cast<float>(sd.BufferDesc.Width), static_cast<float>(sd.BufferDesc.Height));
+	hwnd = sd.OutputWindow;
 	HRESULT res = pSwapChain->GetDevice(__uuidof(ID3D11Device), (void**)& dev);
 	if (SUCCEEDED(res))
 	{	

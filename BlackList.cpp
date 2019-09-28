@@ -43,7 +43,7 @@ void __declspec(naked) GetAngleCemrea()
 
 void BlackList::Init()
 {
-	OverlayInit(this, (ShellClass)Utill::ForceCast(&BlackList::MainLoop));
+	OverlayInit(this,Utill::ForceCast(&BlackList::MainLoop));
 
 	base = Utill::getBaseAddr(L"Blacklist_DX11_game.exe");
 	if (!base)
