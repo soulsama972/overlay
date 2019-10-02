@@ -81,14 +81,14 @@ void BlackList::CleanUp()
 void BlackList::MainLoop(IDXGISwapChain* pSwapChain)
 {
 	bList.Init3D(pSwapChain);
-	bList.DrawESPBone();
-	bList.AimBot();
+	if (viewMatrix)
+		bList.DrawESPBone();
+	//bList.AimBot();
+
 }
 
 void BlackList::DrawESPBone()
 {
-	if (viewMatrix == 0)
-		return;
 	for (size_t i = 0; i < len; i++)
 	{
 		__try
@@ -117,7 +117,6 @@ void BlackList::DrawESPBone()
 			continue;
 		}
 	}
-
 	Draw();
 }
 
@@ -256,6 +255,8 @@ void BlackList::DrawMan(Mesh* mesh)
 		InsertLine(fHands[i], fHands[i + 1], c);
 	}
 	InsertLine(fOri[0], fOri[1], c);
+	float rad = 5;
+	InsertCircle(fOri[0] - (rad/2), rad, fVec4(1,0,0,1));
 }
 
 void BlackList::DrawDrone(Mesh* mesh)

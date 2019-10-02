@@ -28,7 +28,7 @@ protected:
 
 	void InsertLine(fVec2 p1, fVec2 p2,fVec4 color);
 	void InsertRect(fVec2 pos, fVec2 size, fVec4 color);
-
+	void InsertCircle(fVec2 pos,float rad,fVec4 color);
 	void Draw(bool cleanAfterDraw = true);
 
 	void DrawString(float fontSize,fVec2 pos,DWORD color,wchar_t *arg,...);
@@ -48,6 +48,7 @@ private:
 	ID3D11DeviceContext* devcon = 0;
 	Model11<VertexInstance>rect;
 	Model11<VertexInstance>line;
+	Model11<VertexInstance>circle;
 	bool firstTimeInitD3D = true;
 	bool bCreateConosle = true;
 	hook_t h = { 0 };

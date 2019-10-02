@@ -107,6 +107,7 @@ void Overlay11::Init3D(IDXGISwapChain* pSwapChain)
 
 void Overlay11::InitShapes()
 {
+	//rect
 	VertexType vertex[] =
 	{
 		{{-1.0f,-1.0f,1.0f}},
@@ -121,7 +122,7 @@ void Overlay11::InitShapes()
 		0,2,3
 	};
 	rect.InitBuffer(dev,devcon, vertex, 4, ind, 6, 5000, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
+	//line
 	VertexType VertexLine[] =
 	{
 		{fVec3(-1.0f,1.0f,1.0f)},
@@ -132,7 +133,27 @@ void Overlay11::InitShapes()
 		0,1
 	};
 	line.InitBuffer(dev, devcon, VertexLine, 2, ind, 2, 5000, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	//circle
+	const int numPoint = 36;
+	const float PI = 3.14159f;
+	float WedgeAngle = (float)( (2 * PI) / numPoint);
+	VertexType VertexCircle[numPoint];
+	unsigned int indircle[numPoint+1];
+	for (int i = 0; i < numPoint; i++)
+	{
+		//Calculate theta for this vertex
+		float Theta = i * WedgeAngle;
+		//Compute X and Y locations
+		VertexCircle[i].position = fVec3(cosf(Theta),sinf(Theta),1.0f);
+		indircle[i] = i;
+	}
+	indircle[numPoint] = 0;
+	/*for (int i = 0; i < numPoint; i++)
+	{
+		indircle[i] = i;
 
+	}*/
+	circle.InitBuffer(dev, devcon, VertexCircle, numPoint, indircle, numPoint+1, 5000, D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
 }
 
 
@@ -203,15 +224,27 @@ void Overlay11::InsertRect(fVec2 pos, fVec2 size, fVec4 color)
 	rect.AddInstance(in);
 }
 
+void Overlay11::InsertCircle(fVec2 pos, float rad, fVec4 color)
+{
+	VertexInstance in;
+	in.color = color;
+	in.size = fVec2(rad,rad);
+	in.position = pos;
+	circle.AddInstance(in);
+		
+
+}//Draw2DCircle
+
 void Overlay11::Draw(bool cleanAfterDraw)
 {
 	UpdateScreen();
 	rect.Draw();
 	line.Draw();
-
+	circle.Draw();
 	if (cleanAfterDraw)
 	{
 		rect.ClearInstance();
-		line.ClearInstance();		
+		line.ClearInstance();	
+		circle.ClearInstance();
 	}
 }

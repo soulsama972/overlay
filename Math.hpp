@@ -247,6 +247,11 @@ public:
 		return vec2(x / v.x, y / v.y);
 	}
 
+	inline vec2 operator-(const float f)
+	{
+		return vec2(x - f, y - f);
+	}
+
 };
 
 
